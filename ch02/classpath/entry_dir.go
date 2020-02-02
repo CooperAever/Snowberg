@@ -2,12 +2,10 @@ package classpath
 import "io/ioutil"
 import "path/filepath"
 
-type DirEntry stuct{
+type DirEntry struct{
 	absDir string 		// path that store absolute catalogue
-	func newDirEntry(path string) *DirEntry {...}
-	func (self *DirEntry) readClass(className string)([]byte,Entry,error) {...}
-	func (self *DirEntry) String() string {...}
 }
+
 
 // default use newClass as class construct , like newDirEntry create struct instance
 func newDirEntry(path string) *DirEntry{
@@ -20,7 +18,7 @@ func newDirEntry(path string) *DirEntry{
 
 func (self *DirEntry) readClass(className string)([]byte,Entry,error){
 	fileName := filepath.Join(self.absDir,className)
-	data,err := ioutil.ReadFile(filename)
+	data,err := ioutil.ReadFile(fileName)
 	return data,self,err
 }
 
