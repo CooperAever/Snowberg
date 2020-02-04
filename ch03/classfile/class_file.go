@@ -9,7 +9,7 @@ type ClassFile struct{
 	//magic uint32
 	minorVersion uint16
 	majorVersion uint16
-	constantPool Constant Pool
+	constantPool ConstantPool
 	accessFlags uint16 		// a 16bits bitmask, indicate class document has class or interface defination, is public or private, etc. 
 	thisClass uint16   		// give class name
 	superClass uint16 		// give superclass name index in constantPool , every class has superclass except java.lang.Object(index==0).
@@ -32,7 +32,7 @@ func Parse(classData []byte)(cf *ClassFile,err error){
 	}()
 
 	cr := &ClassReader{classData}
-	cf := &ClassFile{}
+	cf = &ClassFile{}
 	cf.read(cr)
 	return 
 }
@@ -66,7 +66,7 @@ func (self *ClassFile) readAndCheckMagic(reader *ClassReader){
 // when we use java 8, it can support class document which Version number is between 45.0~52.0(only 45 has minor version)
 func (self *ClassFile) readAndCheckVersion(reader *ClassReader){
 	self.minorVersion = reader.readUint16()
-	self.majorVersion = reader.readUint16()\
+	self.majorVersion = reader.readUint16()
 	switch self.majorVersion{
 	case 45:
 		return
@@ -82,7 +82,7 @@ func (self *ClassFile) readAndCheckVersion(reader *ClassReader){
 
 // getter
 func (self *ClassFile) MinorVersion() uint16{
-	return self.
+	return self.minorVersion
 }
 
 // getter
@@ -124,7 +124,7 @@ func (self *ClassFile) SuperClassName() string{
 }
 
 func (self *ClassFile) InterfaceNames() []string{
-	interfaceNames := nake([]string,len)(self.interfaces)
+	interfaceNames := make([]string,len(self.interfaces))
 	for i,cpIndex := range self.interfaces{
 		interfaceNames[i] = self.constantPool.getClassName(cpIndex)
 	}

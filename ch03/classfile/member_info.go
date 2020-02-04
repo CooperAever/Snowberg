@@ -41,7 +41,7 @@ func (self *MemberInfo) Name() string{
 
 // getter
 func (self *MemberInfo) Descriptor() string{
-	return self.cp.getUtf8(self.descriptorIndex)
+	return self.cp.getUtf8(self.desriptorIndex)
 }
 
 
