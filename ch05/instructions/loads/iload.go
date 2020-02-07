@@ -1,6 +1,6 @@
 // load instruction get variable from localvars and push into operandStack
 package loads
-import "jvmgo/ch05/instruction/base"
+import "jvmgo/ch05/instructions/base"
 import "jvmgo/ch05/rtda"
 
 // Load int from local variable

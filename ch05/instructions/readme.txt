@@ -1,3 +1,4 @@
+package instructions
 // JVM , namly a virtual machine, which accept bytecode as a readable machine code
 // every class or interface will be compile as a class document
 // Bytecode contain JVM instruction,every instruction begin with a single byte operand -> opcode 
