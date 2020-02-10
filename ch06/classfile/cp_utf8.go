@@ -1,14 +1,20 @@
-// need to know: string in class document is encode with MUTF-8 not standard UTF-8
-// and these two type are slightly different
 package classfile
+
 import "fmt"
 import "unicode/utf16"
 
-type ConstantUtf8Info struct{
+/*
+CONSTANT_Utf8_info {
+    u1 tag;
+    u2 length;
+    u1 bytes[length];
+}
+*/
+type ConstantUtf8Info struct {
 	str string
 }
 
-func (self *ConstantUtf8Info) readInfo(reader *ClassReader){
+func (self *ConstantUtf8Info) readInfo(reader *ClassReader) {
 	length := uint32(reader.readUint16())
 	bytes := reader.readBytes(length)
 	self.str = decodeMUTF8(bytes)

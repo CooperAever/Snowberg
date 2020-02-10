@@ -1,25 +1,22 @@
 package rtda
+
 import "math"
 import "jvmgo/ch06/rtda/heap"
 
-type OperandStack struct{
-	size uint 		//stack top
+type OperandStack struct {
+	size  uint
 	slots []Slot
 }
 
-// OperandStack like LocalVars,just access by stack operator, not index
-// OperandStack used for storing temp data from stack compute
-
-func newOperandStack(maxStack uint) *OperandStack{
-	if maxStack > 0{
+func newOperandStack(maxStack uint) *OperandStack {
+	if maxStack > 0 {
 		return &OperandStack{
-			slots : make([]Slot,maxStack),
+			slots: make([]Slot, maxStack),
 		}
 	}
 	return nil
 }
 
-// push first set val then ++size , pop first -- then return val
 func (self *OperandStack) PushInt(val int32) {
 	self.slots[self.size].num = val
 	self.size++
@@ -63,9 +60,6 @@ func (self *OperandStack) PopDouble() float64 {
 	return math.Float64frombits(bits)
 }
 
-// pushRef is easy , when pop ,remember set slot.ref = nil
-// this is helping GC collect object instance.
-// Every time use a reference should remind this tip.
 func (self *OperandStack) PushRef(ref *heap.Object) {
 	self.slots[self.size].ref = ref
 	self.size++
@@ -77,16 +71,11 @@ func (self *OperandStack) PopRef() *heap.Object {
 	return ref
 }
 
-func (self *OperandStack) PushSlot(slot Slot){
+func (self *OperandStack) PushSlot(slot Slot) {
 	self.slots[self.size] = slot
 	self.size++
 }
-
-func (self *OperandStack) PopSlot()Slot{
+func (self *OperandStack) PopSlot() Slot {
 	self.size--
 	return self.slots[self.size]
 }
-
-
-
-

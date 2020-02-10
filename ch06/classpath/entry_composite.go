@@ -1,34 +1,38 @@
 package classpath
+
 import "errors"
 import "strings"
 
 type CompositeEntry []Entry
 
-// constructor newCompositeEntry divided pathList into small paths , and transformer every small path into Entry instance
-func newCompositeEntry(pathList string) CompositeEntry{
+func newCompositeEntry(pathList string) CompositeEntry {
 	compositeEntry := []Entry{}
-	for _,path := range strings.Split(pathList,pathListSeparator){
+
+	for _, path := range strings.Split(pathList, pathListSeparator) {
 		entry := newEntry(path)
-		compositeEntry = append(compositeEntry,entry)
+		compositeEntry = append(compositeEntry, entry)
 	}
+
 	return compositeEntry
 }
 
-func (self CompositeEntry) readClass(className string) ([]byte,Entry,error){
-	for _,entry := range self{
-		data,from,err := entry.readClass(className)
-		if err == nil{
-			return data,from,nil
+func (self CompositeEntry) readClass(className string) ([]byte, Entry, error) {
+	for _, entry := range self {
+		data, from, err := entry.readClass(className)
+		if err == nil {
+			return data, from, nil
 		}
 	}
-	return nil,nil,errors.New("class not found: " + className)
+
+	return nil, nil, errors.New("class not found: " + className)
 }
 
-func (self CompositeEntry) String() string{
-	strs := make([]string,len(self))
-	for i,entry := range self{
+func (self CompositeEntry) String() string {
+	strs := make([]string, len(self))
+
+	for i, entry := range self {
 		strs[i] = entry.String()
 	}
-	return strings.Join(strs,pathListSeparator)
-}
 
+	return strings.Join(strs, pathListSeparator)
+}

@@ -1,60 +1,57 @@
-// constantpool store 2 type infomation
-// 1.literal :literal including int,float and string ;
-// 2.symbolic reference : symbolic reference including class symbolic reference、field symbolic reference、method symbolic reference and interface symbolic reference
 package heap
+
 import "fmt"
 import "jvmgo/ch06/classfile"
 
 type Constant interface{}
-type ConstantPool struct{
-	class *Class 
+
+type ConstantPool struct {
+	class  *Class
 	consts []Constant
 }
 
-// transformer constantpool in document into constantpool in running time
-// namely []classfile.ConstantInfo ===> []heap.ConstantInfo
-func newConstantPool(class *Class,cfCp classfile.ConstantPool) *ConstantPool{
+func newConstantPool(class *Class, cfCp classfile.ConstantPool) *ConstantPool {
 	cpCount := len(cfCp)
-	consts := make([]Constant,cpCount)
-	rtCp := &ConstantPool{class,consts}
-	for i:=1;i<cpCount;i++{
+	consts := make([]Constant, cpCount)
+	rtCp := &ConstantPool{class, consts}
+
+	for i := 1; i < cpCount; i++ {
 		cpInfo := cfCp[i]
-		// simplest is int or float,pick up constant value and put into consts
-		switch cpInfo.(type){
-		//literal 
+		switch cpInfo.(type) {
 		case *classfile.ConstantIntegerInfo:
 			intInfo := cpInfo.(*classfile.ConstantIntegerInfo)
-			consts[i] = intInfo.Value() //int32
+			consts[i] = intInfo.Value()
 		case *classfile.ConstantFloatInfo:
 			floatInfo := cpInfo.(*classfile.ConstantFloatInfo)
-			consts[i] = floatInfo.Value() //float32	
+			consts[i] = floatInfo.Value()
 		case *classfile.ConstantLongInfo:
 			longInfo := cpInfo.(*classfile.ConstantLongInfo)
-			consts[i] = longInfo.Value() //int64
-			i++  //long occupied 2 position,need increment one more index	
+			consts[i] = longInfo.Value()
+			i++
 		case *classfile.ConstantDoubleInfo:
 			doubleInfo := cpInfo.(*classfile.ConstantDoubleInfo)
-			consts[i] = doubleInfo.Value() //float64
-			i++ //double occupied 2 position,need increment one more index
+			consts[i] = doubleInfo.Value()
+			i++
 		case *classfile.ConstantStringInfo:
 			stringInfo := cpInfo.(*classfile.ConstantStringInfo)
-			consts[i] = stringInfo.String() //string
-
-		//symbolic reference
+			consts[i] = stringInfo.String()
 		case *classfile.ConstantClassInfo:
 			classInfo := cpInfo.(*classfile.ConstantClassInfo)
-			consts[i] = newClassRef(rtCp,classInfo) 
+			consts[i] = newClassRef(rtCp, classInfo)
 		case *classfile.ConstantFieldrefInfo:
 			fieldrefInfo := cpInfo.(*classfile.ConstantFieldrefInfo)
-			consts[i] = newFieldRef(rtCp,fieldrefInfo)
+			consts[i] = newFieldRef(rtCp, fieldrefInfo)
 		case *classfile.ConstantMethodrefInfo:
 			methodrefInfo := cpInfo.(*classfile.ConstantMethodrefInfo)
-			consts[i] = newMethodRef(rtCp,methodrefInfo) 	
+			consts[i] = newMethodRef(rtCp, methodrefInfo)
 		case *classfile.ConstantInterfaceMethodrefInfo:
 			methodrefInfo := cpInfo.(*classfile.ConstantInterfaceMethodrefInfo)
-			consts[i] = newInterfaceMethodRef(rtCp,methodrefInfo) 
+			consts[i] = newInterfaceMethodRef(rtCp, methodrefInfo)
+		default:
+			// todo
 		}
 	}
+
 	return rtCp
 }
 

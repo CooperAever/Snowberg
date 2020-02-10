@@ -1,29 +1,24 @@
 package references
+
 import "jvmgo/ch06/instructions/base"
 import "jvmgo/ch06/rtda"
 import "jvmgo/ch06/rtda/heap"
 
 // Set field in object
-type PUT_FIELD struct{
-	base.Index16Instruction
-}
+type PUT_FIELD struct{ base.Index16Instruction }
 
-// putfield instruction set instance variable,need 3 operands
-// first two operand are constantpool index and value
-// third operand is object ref,pop from operandStack
-
-func (self *PUT_FIELD) Execute(frame *rtda.Frame){
+func (self *PUT_FIELD) Execute(frame *rtda.Frame) {
 	currentMethod := frame.Method()
 	currentClass := currentMethod.Class()
 	cp := currentClass.ConstantPool()
-	fieldRef := cp.GetConstant(self.Index).(*heapFieldRef)
-	field := fieldRef.ResolveField()
+	fieldRef := cp.GetConstant(self.Index).(*heap.FieldRef)
+	field := fieldRef.ResolvedField()
 
-	if field.IsStatic(){
-		panic("java.lang.IncopatibleClassChangeError")
+	if field.IsStatic() {
+		panic("java.lang.IncompatibleClassChangeError")
 	}
-	if field.IsFinal(){
-		if currentClass != field.Class() || currentMethod.Name() != "<init>"{
+	if field.IsFinal() {
+		if currentClass != field.Class() || currentMethod.Name() != "<init>" {
 			panic("java.lang.IllegalAccessError")
 		}
 	}
@@ -31,14 +26,15 @@ func (self *PUT_FIELD) Execute(frame *rtda.Frame){
 	descriptor := field.Descriptor()
 	slotId := field.SlotId()
 	stack := frame.OperandStack()
-	switch descriptor[0]{
-	case 'Z','B','C','S','I':
+
+	switch descriptor[0] {
+	case 'Z', 'B', 'C', 'S', 'I':
 		val := stack.PopInt()
 		ref := stack.PopRef()
-		if ref == nil{
+		if ref == nil {
 			panic("java.lang.NullPointerException")
 		}
-		ref.Fields().SetInt(slotId,val)
+		ref.Fields().SetInt(slotId, val)
 	case 'F':
 		val := stack.PopFloat()
 		ref := stack.PopRef()

@@ -1,10 +1,12 @@
 package heap
+
 import "jvmgo/ch06/classfile"
-type ClassRef struct{
+
+type ClassRef struct {
 	SymRef
 }
 
-func newClassRef(cp *ConstantPool,classInfo *classfile.ConstantClassInfo) *ClassRef{
+func newClassRef(cp *ConstantPool, classInfo *classfile.ConstantClassInfo) *ClassRef {
 	ref := &ClassRef{}
 	ref.cp = cp
 	ref.className = classInfo.Name()

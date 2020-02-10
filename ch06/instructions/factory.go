@@ -2,57 +2,55 @@ package instructions
 
 import "fmt"
 import "jvmgo/ch06/instructions/base"
-import "jvmgo/ch06/instructions/comparisons"
-import "jvmgo/ch06/instructions/constants"
-import "jvmgo/ch06/instructions/control"
-import "jvmgo/ch06/instructions/conversions"
-import "jvmgo/ch06/instructions/extended"
-import "jvmgo/ch06/instructions/loads"
-import "jvmgo/ch06/instructions/math"
-import "jvmgo/ch06/instructions/stack"
-import "jvmgo/ch06/instructions/stores"
-import "jvmgo/ch06/instructions/references"
+import . "jvmgo/ch06/instructions/comparisons"
+import . "jvmgo/ch06/instructions/constants"
+import . "jvmgo/ch06/instructions/control"
+import . "jvmgo/ch06/instructions/conversions"
+import . "jvmgo/ch06/instructions/extended"
+import . "jvmgo/ch06/instructions/loads"
+import . "jvmgo/ch06/instructions/math"
+import . "jvmgo/ch06/instructions/references"
+import . "jvmgo/ch06/instructions/stack"
+import . "jvmgo/ch06/instructions/stores"
 
 // NoOperandsInstruction singletons
-// return a Singleton to save space
 var (
-	nop         = &constants.NOP{}
-	aconst_null = &constants.ACONST_NULL{}
-	iconst_m1   = &constants.ICONST_M1{}
-	iconst_0    = &constants.ICONST_0{}
-	iconst_1    = &constants.ICONST_1{}
-	iconst_2    = &constants.ICONST_2{}
-	iconst_3    = &constants.ICONST_3{}
-	iconst_4    = &constants.ICONST_4{}
-	iconst_5    = &constants.ICONST_5{}
-	lconst_0    = &constants.LCONST_0{}
-	lconst_1    = &constants.LCONST_1{}
-	fconst_0    = &constants.FCONST_0{}
-	fconst_1    = &constants.FCONST_1{}
-	fconst_2    = &constants.FCONST_2{}
-	dconst_0    = &constants.DCONST_0{}
-	dconst_1    = &constants.DCONST_1{}
-
-	iload_0     = &loads.ILOAD_0{}
-	iload_1     = &loads.ILOAD_1{}
-	iload_2     = &loads.ILOAD_2{}
-	iload_3     = &loads.ILOAD_3{}
-	lload_0     = &loads.LLOAD_0{}
-	lload_1     = &loads.LLOAD_1{}
-	lload_2     = &loads.LLOAD_2{}
-	lload_3     = &loads.LLOAD_3{}
-	fload_0     = &loads.FLOAD_0{}
-	fload_1     = &loads.FLOAD_1{}
-	fload_2     = &loads.FLOAD_2{}
-	fload_3     = &loads.FLOAD_3{}
-	dload_0     = &loads.DLOAD_0{}
-	dload_1     = &loads.DLOAD_1{}
-	dload_2     = &loads.DLOAD_2{}
-	dload_3     = &loads.DLOAD_3{}
-	aload_0     = &loads.ALOAD_0{}
-	aload_1     = &loads.ALOAD_1{}
-	aload_2     = &loads.ALOAD_2{}
-	aload_3     = &loads.ALOAD_3{}
+	nop         = &NOP{}
+	aconst_null = &ACONST_NULL{}
+	iconst_m1   = &ICONST_M1{}
+	iconst_0    = &ICONST_0{}
+	iconst_1    = &ICONST_1{}
+	iconst_2    = &ICONST_2{}
+	iconst_3    = &ICONST_3{}
+	iconst_4    = &ICONST_4{}
+	iconst_5    = &ICONST_5{}
+	lconst_0    = &LCONST_0{}
+	lconst_1    = &LCONST_1{}
+	fconst_0    = &FCONST_0{}
+	fconst_1    = &FCONST_1{}
+	fconst_2    = &FCONST_2{}
+	dconst_0    = &DCONST_0{}
+	dconst_1    = &DCONST_1{}
+	iload_0     = &ILOAD_0{}
+	iload_1     = &ILOAD_1{}
+	iload_2     = &ILOAD_2{}
+	iload_3     = &ILOAD_3{}
+	lload_0     = &LLOAD_0{}
+	lload_1     = &LLOAD_1{}
+	lload_2     = &LLOAD_2{}
+	lload_3     = &LLOAD_3{}
+	fload_0     = &FLOAD_0{}
+	fload_1     = &FLOAD_1{}
+	fload_2     = &FLOAD_2{}
+	fload_3     = &FLOAD_3{}
+	dload_0     = &DLOAD_0{}
+	dload_1     = &DLOAD_1{}
+	dload_2     = &DLOAD_2{}
+	dload_3     = &DLOAD_3{}
+	aload_0     = &ALOAD_0{}
+	aload_1     = &ALOAD_1{}
+	aload_2     = &ALOAD_2{}
+	aload_3     = &ALOAD_3{}
 	// iaload      = &IALOAD{}
 	// laload      = &LALOAD{}
 	// faload      = &FALOAD{}
@@ -61,26 +59,26 @@ var (
 	// baload      = &BALOAD{}
 	// caload      = &CALOAD{}
 	// saload      = &SALOAD{}
-	istore_0 = &stores.ISTORE_0{}
-	istore_1 = &stores.ISTORE_1{}
-	istore_2 = &stores.ISTORE_2{}
-	istore_3 = &stores.ISTORE_3{}
-	lstore_0 = &stores.LSTORE_0{}
-	lstore_1 = &stores.LSTORE_1{}
-	lstore_2 = &stores.LSTORE_2{}
-	lstore_3 = &stores.LSTORE_3{}
-	fstore_0 = &stores.FSTORE_0{}
-	fstore_1 = &stores.FSTORE_1{}
-	fstore_2 = &stores.FSTORE_2{}
-	fstore_3 = &stores.FSTORE_3{}
-	dstore_0 = &stores.DSTORE_0{}
-	dstore_1 = &stores.DSTORE_1{}
-	dstore_2 = &stores.DSTORE_2{}
-	dstore_3 = &stores.DSTORE_3{}
-	astore_0 = &stores.ASTORE_0{}
-	astore_1 = &stores.ASTORE_1{}
-	astore_2 = &stores.ASTORE_2{}
-	astore_3 = &stores.ASTORE_3{}
+	istore_0 = &ISTORE_0{}
+	istore_1 = &ISTORE_1{}
+	istore_2 = &ISTORE_2{}
+	istore_3 = &ISTORE_3{}
+	lstore_0 = &LSTORE_0{}
+	lstore_1 = &LSTORE_1{}
+	lstore_2 = &LSTORE_2{}
+	lstore_3 = &LSTORE_3{}
+	fstore_0 = &FSTORE_0{}
+	fstore_1 = &FSTORE_1{}
+	fstore_2 = &FSTORE_2{}
+	fstore_3 = &FSTORE_3{}
+	dstore_0 = &DSTORE_0{}
+	dstore_1 = &DSTORE_1{}
+	dstore_2 = &DSTORE_2{}
+	dstore_3 = &DSTORE_3{}
+	astore_0 = &ASTORE_0{}
+	astore_1 = &ASTORE_1{}
+	astore_2 = &ASTORE_2{}
+	astore_3 = &ASTORE_3{}
 	// iastore  = &IASTORE{}
 	// lastore  = &LASTORE{}
 	// fastore  = &FASTORE{}
@@ -89,74 +87,71 @@ var (
 	// bastore  = &BASTORE{}
 	// castore  = &CASTORE{}
 	// sastore  = &SASTORE{}
-	pop     = &stack.POP{}
-	pop2    = &stack.POP2{}
-	dup     = &stack.DUP{}
-	dup_x1  = &stack.DUP_X1{}
-	dup_x2  = &stack.DUP_X2{}
-	dup2    = &stack.DUP2{}
-	dup2_x1 = &stack.DUP2_X1{}
-	dup2_x2 = &stack.DUP2_X2{}
-	swap    = &stack.SWAP{}
-
-	iadd    = &math.IADD{}
-	ladd    = &math.LADD{}
-	fadd    = &math.FADD{}
-	dadd    = &math.DADD{}
-	isub    = &math.ISUB{}
-	lsub    = &math.LSUB{}
-	fsub    = &math.FSUB{}
-	dsub    = &math.DSUB{}
-	imul    = &math.IMUL{}
-	lmul    = &math.LMUL{}
-	fmul    = &math.FMUL{}
-	dmul    = &math.DMUL{}
-	idiv    = &math.IDIV{}
-	ldiv    = &math.LDIV{}
-	fdiv    = &math.FDIV{}
-	ddiv    = &math.DDIV{}
-	irem    = &math.IREM{}
-	lrem    = &math.LREM{}
-	frem    = &math.FREM{}
-	drem    = &math.DREM{}
-	ineg    = &math.INEG{}
-	lneg    = &math.LNEG{}
-	fneg    = &math.FNEG{}
-	dneg    = &math.DNEG{}
-	ishl    = &math.ISHL{}
-	lshl    = &math.LSHL{}
-	ishr    = &math.ISHR{}
-	lshr    = &math.LSHR{}
-	iushr   = &math.IUSHR{}
-	lushr   = &math.LUSHR{}
-	iand    = &math.IAND{}
-	land    = &math.LAND{}
-	ior     = &math.IOR{}
-	lor     = &math.LOR{}
-	ixor    = &math.IXOR{}
-	lxor    = &math.LXOR{}
-
-	i2l     = &conversions.I2L{}
-	i2f     = &conversions.I2F{}
-	i2d     = &conversions.I2D{}
-	l2i     = &conversions.L2I{}
-	l2f     = &conversions.L2F{}
-	l2d     = &conversions.L2D{}
-	f2i     = &conversions.F2I{}
-	f2l     = &conversions.F2L{}
-	f2d     = &conversions.F2D{}
-	d2i     = &conversions.D2I{}
-	d2l     = &conversions.D2L{}
-	d2f     = &conversions.D2F{}
-	i2b     = &conversions.I2B{}
-	i2c     = &conversions.I2C{}
-	i2s     = &conversions.I2S{}
-
-	lcmp    = &comparisons.LCMP{}
-	fcmpl   = &comparisons.FCMPL{}
-	fcmpg   = &comparisons.FCMPG{}
-	dcmpl   = &comparisons.DCMPL{}
-	dcmpg   = &comparisons.DCMPG{}
+	pop     = &POP{}
+	pop2    = &POP2{}
+	dup     = &DUP{}
+	dup_x1  = &DUP_X1{}
+	dup_x2  = &DUP_X2{}
+	dup2    = &DUP2{}
+	dup2_x1 = &DUP2_X1{}
+	dup2_x2 = &DUP2_X2{}
+	swap    = &SWAP{}
+	iadd    = &IADD{}
+	ladd    = &LADD{}
+	fadd    = &FADD{}
+	dadd    = &DADD{}
+	isub    = &ISUB{}
+	lsub    = &LSUB{}
+	fsub    = &FSUB{}
+	dsub    = &DSUB{}
+	imul    = &IMUL{}
+	lmul    = &LMUL{}
+	fmul    = &FMUL{}
+	dmul    = &DMUL{}
+	idiv    = &IDIV{}
+	ldiv    = &LDIV{}
+	fdiv    = &FDIV{}
+	ddiv    = &DDIV{}
+	irem    = &IREM{}
+	lrem    = &LREM{}
+	frem    = &FREM{}
+	drem    = &DREM{}
+	ineg    = &INEG{}
+	lneg    = &LNEG{}
+	fneg    = &FNEG{}
+	dneg    = &DNEG{}
+	ishl    = &ISHL{}
+	lshl    = &LSHL{}
+	ishr    = &ISHR{}
+	lshr    = &LSHR{}
+	iushr   = &IUSHR{}
+	lushr   = &LUSHR{}
+	iand    = &IAND{}
+	land    = &LAND{}
+	ior     = &IOR{}
+	lor     = &LOR{}
+	ixor    = &IXOR{}
+	lxor    = &LXOR{}
+	i2l     = &I2L{}
+	i2f     = &I2F{}
+	i2d     = &I2D{}
+	l2i     = &L2I{}
+	l2f     = &L2F{}
+	l2d     = &L2D{}
+	f2i     = &F2I{}
+	f2l     = &F2L{}
+	f2d     = &F2D{}
+	d2i     = &D2I{}
+	d2l     = &D2L{}
+	d2f     = &D2F{}
+	i2b     = &I2B{}
+	i2c     = &I2C{}
+	i2s     = &I2S{}
+	lcmp    = &LCMP{}
+	fcmpl   = &FCMPL{}
+	fcmpg   = &FCMPG{}
+	dcmpl   = &DCMPL{}
+	dcmpg   = &DCMPG{}
 	// ireturn = &IRETURN{}
 	// lreturn = &LRETURN{}
 	// freturn = &FRETURN{}
@@ -205,9 +200,9 @@ func NewInstruction(opcode byte) base.Instruction {
 	case 0x0f:
 		return dconst_1
 	case 0x10:
-		return &constants.BIPUSH{}
+		return &BIPUSH{}
 	case 0x11:
-		return &constants.SIPUSH{}
+		return &SIPUSH{}
 	case 0x12:
 		return &LDC{}
 	case 0x13:
@@ -215,15 +210,15 @@ func NewInstruction(opcode byte) base.Instruction {
 	case 0x14:
 		return &LDC2_W{}
 	case 0x15:
-		return &loads.ILOAD{}
+		return &ILOAD{}
 	case 0x16:
-		return &loads.LLOAD{}
+		return &LLOAD{}
 	case 0x17:
-		return &loads.FLOAD{}
+		return &FLOAD{}
 	case 0x18:
-		return &loads.DLOAD{}
+		return &DLOAD{}
 	case 0x19:
-		return &loads.ALOAD{}
+		return &ALOAD{}
 	case 0x1a:
 		return iload_0
 	case 0x1b:
@@ -281,15 +276,15 @@ func NewInstruction(opcode byte) base.Instruction {
 	// case 0x35:
 	// 	return saload
 	case 0x36:
-		return &stores.ISTORE{}
+		return &ISTORE{}
 	case 0x37:
-		return &stores.LSTORE{}
+		return &LSTORE{}
 	case 0x38:
-		return &stores.FSTORE{}
+		return &FSTORE{}
 	case 0x39:
-		return &stores.DSTORE{}
+		return &DSTORE{}
 	case 0x3a:
-		return &stores.ASTORE{}
+		return &ASTORE{}
 	case 0x3b:
 		return istore_0
 	case 0x3c:
@@ -437,7 +432,7 @@ func NewInstruction(opcode byte) base.Instruction {
 	case 0x83:
 		return lxor
 	case 0x84:
-		return &math.IINC{}
+		return &IINC{}
 	case 0x85:
 		return i2l
 	case 0x86:
@@ -479,43 +474,43 @@ func NewInstruction(opcode byte) base.Instruction {
 	case 0x98:
 		return dcmpg
 	case 0x99:
-		return &comparisons.IFEQ{}
+		return &IFEQ{}
 	case 0x9a:
-		return &comparisons.IFNE{}
+		return &IFNE{}
 	case 0x9b:
-		return &comparisons.IFLT{}
+		return &IFLT{}
 	case 0x9c:
-		return &comparisons.IFGE{}
+		return &IFGE{}
 	case 0x9d:
-		return &comparisons.IFGT{}
+		return &IFGT{}
 	case 0x9e:
-		return &comparisons.IFLE{}
+		return &IFLE{}
 	case 0x9f:
-		return &comparisons.IF_ICMPEQ{}
+		return &IF_ICMPEQ{}
 	case 0xa0:
-		return &comparisons.IF_ICMPNE{}
+		return &IF_ICMPNE{}
 	case 0xa1:
-		return &comparisons.IF_ICMPLT{}
+		return &IF_ICMPLT{}
 	case 0xa2:
-		return &comparisons.IF_ICMPGE{}
+		return &IF_ICMPGE{}
 	case 0xa3:
-		return &comparisons.IF_ICMPGT{}
+		return &IF_ICMPGT{}
 	case 0xa4:
-		return &comparisons.IF_ICMPLE{}
+		return &IF_ICMPLE{}
 	case 0xa5:
-		return &comparisons.IF_ACMPEQ{}
+		return &IF_ACMPEQ{}
 	case 0xa6:
-		return &comparisons.IF_ACMPNE{}
+		return &IF_ACMPNE{}
 	case 0xa7:
-		return &control.GOTO{}
+		return &GOTO{}
 	// case 0xa8:
 	// 	return &JSR{}
 	// case 0xa9:
 	// 	return &RET{}
 	case 0xaa:
-		return &control.TABLE_SWITCH{}
+		return &TABLE_SWITCH{}
 	case 0xab:
-		return &control.LOOKUP_SWITCH{}
+		return &LOOKUP_SWITCH{}
 	// case 0xac:
 	// 	return ireturn
 	// case 0xad:
@@ -529,17 +524,17 @@ func NewInstruction(opcode byte) base.Instruction {
 	// case 0xb1:
 	// 	return _return
 	case 0xb2:
-		return &references.GET_STATIC{}
+		return &GET_STATIC{}
 	case 0xb3:
-		return &references.PUT_STATIC{}
+		return &PUT_STATIC{}
 	case 0xb4:
-		return &references.GET_FIELD{}
+		return &GET_FIELD{}
 	case 0xb5:
-		return &references.PUT_FIELD{}
+		return &PUT_FIELD{}
 	case 0xb6:
-		return &references.INVOKE_VIRTUAL{}
+		return &INVOKE_VIRTUAL{}
 	case 0xb7:
-		return &references.INVOKE_SPECIAL{}
+		return &INVOKE_SPECIAL{}
 	// case 0xb8:
 	// 	return &INVOKE_STATIC{}
 	// case 0xb9:
@@ -547,7 +542,7 @@ func NewInstruction(opcode byte) base.Instruction {
 	// case 0xba:
 	// 	return &INVOKE_DYNAMIC{}
 	case 0xbb:
-		return &references.NEW{}
+		return &NEW{}
 	// case 0xbc:
 	// 	return &NEW_ARRAY{}
 	// case 0xbd:
@@ -557,23 +552,23 @@ func NewInstruction(opcode byte) base.Instruction {
 	// case 0xbf:
 	// 	return athrow
 	case 0xc0:
-		return &references.CHECK_CAST{}
+		return &CHECK_CAST{}
 	case 0xc1:
-		return &references.INSTANCE_OF{}
+		return &INSTANCE_OF{}
 	// case 0xc2:
 	// 	return monitorenter
 	// case 0xc3:
 	// 	return monitorexit
 	case 0xc4:
-		return &extended.WIDE{}
+		return &WIDE{}
 	// case 0xc5:
 	// 	return &MULTI_ANEW_ARRAY{}
 	case 0xc6:
-		return &extended.IFNULL{}
+		return &IFNULL{}
 	case 0xc7:
-		return &extended.IFNONNULL{}
+		return &IFNONNULL{}
 	case 0xc8:
-		return &extended.GOTO_W{}
+		return &GOTO_W{}
 	// case 0xc9:
 	// 	return &JSR_W{}
 	// case 0xca: breakpoint

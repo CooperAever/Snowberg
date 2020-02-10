@@ -1,8 +1,6 @@
 package classfile
-import "math"
 
-// constantIntegerInfo can actully fit a java int variable,
-// and boolean、byte、short、char which are smaller than int can alos fit in.
+import "math"
 
 /*
 CONSTANT_Integer_info {

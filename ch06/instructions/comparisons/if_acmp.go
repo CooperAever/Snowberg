@@ -3,7 +3,6 @@ package comparisons
 import "jvmgo/ch06/instructions/base"
 import "jvmgo/ch06/rtda"
 
-// compare reference
 // Branch if reference comparison succeeds
 type IF_ACMPEQ struct{ base.BranchInstruction }
 

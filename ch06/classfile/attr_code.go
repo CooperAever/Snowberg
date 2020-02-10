@@ -1,32 +1,39 @@
 package classfile
 
-
-// Code is a variable length attr(not fixed length)
-// store byte code info
-type CodeAttribute struct{
-	cp ConstantPool
-	maxStack uint16 	// max depth of operator stack (ch04)
-	maxLocals uint16  	// the size of local variable table (ch04)
-	code []byte 		//byte code (ch05)
-	exceptionTable []*ExceptionTableEntry 		// exception handler table (ch10)
-	attributes []AttributeInfo 			// attribute table
+/*
+Code_attribute {
+    u2 attribute_name_index;
+    u4 attribute_length;
+    u2 max_stack;
+    u2 max_locals;
+    u4 code_length;
+    u1 code[code_length];
+    u2 exception_table_length;
+    {   u2 start_pc;
+        u2 end_pc;
+        u2 handler_pc;
+        u2 catch_type;
+    } exception_table[exception_table_length];
+    u2 attributes_count;
+    attribute_info attributes[attributes_count];
+}
+*/
+type CodeAttribute struct {
+	cp             ConstantPool
+	maxStack       uint16
+	maxLocals      uint16
+	code           []byte
+	exceptionTable []*ExceptionTableEntry
+	attributes     []AttributeInfo
 }
 
-
-type ExceptionTableEntry struct{
-	startPc uint16
-	endPc uint16
-	handlerPc uint16
-	catchType uint16
-}
-
-func (self *CodeAttribute) readInfo(reader *ClassReader){
+func (self *CodeAttribute) readInfo(reader *ClassReader) {
 	self.maxStack = reader.readUint16()
 	self.maxLocals = reader.readUint16()
 	codeLength := reader.readUint32()
 	self.code = reader.readBytes(codeLength)
 	self.exceptionTable = readExceptionTable(reader)
-	self.attributes = readAttributes(reader,self.cp)
+	self.attributes = readAttributes(reader, self.cp)
 }
 
 func (self *CodeAttribute) MaxStack() uint {
@@ -42,16 +49,22 @@ func (self *CodeAttribute) ExceptionTable() []*ExceptionTableEntry {
 	return self.exceptionTable
 }
 
+type ExceptionTableEntry struct {
+	startPc   uint16
+	endPc     uint16
+	handlerPc uint16
+	catchType uint16
+}
 
-func readExceptionTable(reader *ClassReader) []*ExceptionTableEntry{
+func readExceptionTable(reader *ClassReader) []*ExceptionTableEntry {
 	exceptionTableLength := reader.readUint16()
-	exceptionTable := make([] *ExceptionTableEntry,exceptionTableLength)
-	for i := range exceptionTable{
+	exceptionTable := make([]*ExceptionTableEntry, exceptionTableLength)
+	for i := range exceptionTable {
 		exceptionTable[i] = &ExceptionTableEntry{
-			startPc : reader.readUint16(),
-			endPc : reader.readUint16(),
+			startPc:   reader.readUint16(),
+			endPc:     reader.readUint16(),
 			handlerPc: reader.readUint16(),
-			catchType:reader.readUint16(),
+			catchType: reader.readUint16(),
 		}
 	}
 	return exceptionTable

@@ -1,52 +1,63 @@
 package classfile
 
-// fields and methods have same structure,so use the same struct construct -- MemberInfo
-type MemberInfo struct{
-	cp ConstantPool 	// a pointer to constantPool
-	accessFlags uint16 		// access flag, a bit mask
-	nameIndex uint16 		// name index in constantPool
-	desriptorIndex uint16  	// desriptorIndex in constantPool 
-	attributes []AttributeInfo 		// attribute table
+/*
+field_info {
+    u2             access_flags;
+    u2             name_index;
+    u2             descriptor_index;
+    u2             attributes_count;
+    attribute_info attributes[attributes_count];
+}
+method_info {
+    u2             access_flags;
+    u2             name_index;
+    u2             descriptor_index;
+    u2             attributes_count;
+    attribute_info attributes[attributes_count];
+}
+*/
+
+type MemberInfo struct {
+	cp              ConstantPool
+	accessFlags     uint16
+	nameIndex       uint16
+	descriptorIndex uint16
+	attributes      []AttributeInfo
 }
 
-//use readMembers to read fields table or methods table
-func readMembers(reader *ClassReader,cp ConstantPool) [] *MemberInfo{
+// read field or method table
+func readMembers(reader *ClassReader, cp ConstantPool) []*MemberInfo {
 	memberCount := reader.readUint16()
-	members := make([] *MemberInfo,memberCount)
-	for i:= range members{
-		members[i] = readMember(reader,cp)
+	members := make([]*MemberInfo, memberCount)
+	for i := range members {
+		members[i] = readMember(reader, cp)
 	}
 	return members
 }
 
-func readMember(reader *ClassReader,cp ConstantPool) *MemberInfo{
+func readMember(reader *ClassReader, cp ConstantPool) *MemberInfo {
 	return &MemberInfo{
-		cp : cp,
-		accessFlags : reader.readUint16(),
-		nameIndex : reader.readUint16(),
-		desriptorIndex: reader.readUint16(),
-		attributes : readAttributes(reader,cp),
+		cp:              cp,
+		accessFlags:     reader.readUint16(),
+		nameIndex:       reader.readUint16(),
+		descriptorIndex: reader.readUint16(),
+		attributes:      readAttributes(reader, cp),
 	}
 }
 
-// getter
-func (self *MemberInfo) AccessFlags() uint16{
+func (self *MemberInfo) AccessFlags() uint16 {
 	return self.accessFlags
 }
-
-// getter
-func (self *MemberInfo) Name() string{
+func (self *MemberInfo) Name() string {
 	return self.cp.getUtf8(self.nameIndex)
 }
-
-// getter
-func (self *MemberInfo) Descriptor() string{
-	return self.cp.getUtf8(self.desriptorIndex)
+func (self *MemberInfo) Descriptor() string {
+	return self.cp.getUtf8(self.descriptorIndex)
 }
 
-func (self *MemberInfo) CodeAttribute() *CodeAttribute{
-	for _,attrInfo := range self.attributes{
-		switch attrInfo.(type){
+func (self *MemberInfo) CodeAttribute() *CodeAttribute {
+	for _, attrInfo := range self.attributes {
+		switch attrInfo.(type) {
 		case *CodeAttribute:
 			return attrInfo.(*CodeAttribute)
 		}
@@ -54,13 +65,12 @@ func (self *MemberInfo) CodeAttribute() *CodeAttribute{
 	return nil
 }
 
-func (self *MemberInfo) ConstantValueAttribute() *ConstantValueAttribute{
-	for _,attrInfo := range self.attributes{
-		switch attrInfo.(type){
+func (self *MemberInfo) ConstantValueAttribute() *ConstantValueAttribute {
+	for _, attrInfo := range self.attributes {
+		switch attrInfo.(type) {
 		case *ConstantValueAttribute:
 			return attrInfo.(*ConstantValueAttribute)
 		}
 	}
 	return nil
 }
-

@@ -3,9 +3,6 @@ package comparisons
 import "jvmgo/ch06/instructions/base"
 import "jvmgo/ch06/rtda"
 
-// pop two operandStack top value and compare,if meet condition then jump
-
-// Branch if int comparison succeeds
 // Branch if int comparison succeeds
 type IF_ICMPEQ struct{ base.BranchInstruction }
 

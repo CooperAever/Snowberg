@@ -1,14 +1,15 @@
 package heap
+
 import "jvmgo/ch06/classfile"
 
-type ClassMember struct{
+type ClassMember struct {
 	accessFlags uint16
-	name string 
-	descriptor string
-	class *Class //store class struct pointer
+	name        string
+	descriptor  string
+	class       *Class
 }
 
-func(self *ClassMember) copyMemberInfo(memberInfo *classfile.MemberInfo){
+func (self *ClassMember) copyMemberInfo(memberInfo *classfile.MemberInfo) {
 	self.accessFlags = memberInfo.AccessFlags()
 	self.name = memberInfo.Name()
 	self.descriptor = memberInfo.Descriptor()
@@ -44,22 +45,18 @@ func (self *ClassMember) Class() *Class {
 	return self.class
 }
 
-
-func(self *ClassMember) isAccessiableTo(d *Class) bool{
-	// if field is public, any class can access
-	if self.IsPublic(){
+// jvms 5.4.4
+func (self *ClassMember) isAccessibleTo(d *Class) bool {
+	if self.IsPublic() {
 		return true
 	}
-	c := self.class 
-	// if field is protected, only child class or under the same package can access
+	c := self.class
 	if self.IsProtected() {
-		return d == c || d.isSubClassOf(c) || c.getPackageName() == d.getPackageName()
+		return d == c || d.isSubClassOf(c) ||
+			c.getPackageName() == d.getPackageName()
 	}
-	// if field is not public、protected、privated, only under the same package can access
-
 	if !self.IsPrivate() {
 		return c.getPackageName() == d.getPackageName()
 	}
-	// if field is private,only this field.Class can access
-	return d == c 
+	return d == c
 }
