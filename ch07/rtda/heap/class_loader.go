@@ -13,12 +13,14 @@ class names:
 */
 type ClassLoader struct {
 	cp       *classpath.Classpath
+	verboseFlag bool
 	classMap map[string]*Class // loaded classes
 }
 
-func NewClassLoader(cp *classpath.Classpath) *ClassLoader {
+func NewClassLoader(cp *classpath.Classpath,verboseFlag bool) *ClassLoader {
 	return &ClassLoader{
 		cp:       cp,
+		verboseFlag: verboseFlag,
 		classMap: make(map[string]*Class),
 	}
 }
@@ -36,7 +38,9 @@ func (self *ClassLoader) loadNonArrayClass(name string) *Class {
 	data, entry := self.readClass(name)
 	class := self.defineClass(data)
 	link(class)
-	fmt.Printf("[Loaded %s from %s]\n", name, entry)
+	if self.verboseFlag{
+		fmt.Printf("[Loaded %s from %s]\n", name, entry)
+	}
 	return class
 }
 

@@ -31,7 +31,7 @@ func (self *InterfaceMethodRef) resolveInterfaceMethodRef() {
 	if !c.IsInterface(){
 		panic("java.lang.IncompatibleClassChangeError")
 	}
-	method := lookupInterfaceMethod(c,self,self.descriptor)
+	method := lookupInterfaceMethod(c,self.name,self.descriptor)
 	if method == nil{
 		panic("java.lang.NoSuchMethodError")
 	}

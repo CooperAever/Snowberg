@@ -14,6 +14,13 @@ func (self *GET_STATIC) Execute(frame *rtda.Frame) {
 	class := field.Class()
 	// todo: init class
 
+	// check if class has been initialize
+	if !class.InitStarted() {
+		frame.RevertNextPC()
+		base.InitClass(frame.Thread(), class)
+		return
+	}
+	
 	if !field.IsStatic() {
 		panic("java.lang.IncompatibleClassChangeError")
 	}

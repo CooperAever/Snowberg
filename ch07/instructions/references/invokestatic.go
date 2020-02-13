@@ -1,7 +1,8 @@
 package references
+
 import "jvmgo/ch07/instructions/base"
 import "jvmgo/ch07/rtda"
-import "jvmgo/ch07/rtda/class"
+import "jvmgo/ch07/rtda/heap"
 
 // Invoke a class (static) method
 type INVOKE_STATIC struct{base.Index16Instruction}
@@ -17,8 +18,15 @@ func (self *INVOKE_STATIC) Execute(frame *rtda.Frame) {
 		panic("java.lang.IncompatibleClassChangeError")
 	}
 
+	class := resolvedMethod.Class()
+	// check if class has been initialize
+	if !class.InitStarted() {
+		frame.RevertNextPC()
+		base.InitClass(frame.Thread(), class)
+		return
+	}
+
 	base.InvokeMethod(frame, resolvedMethod)
 }
-
 
 

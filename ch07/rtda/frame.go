@@ -40,3 +40,9 @@ func (self *Frame) NextPC() int {
 func (self *Frame) SetNextPC(nextPC int) {
 	self.nextPC = nextPC
 }
+// if class not initialized, need first initialize
+// but and this time, instruction execution is half way, means nextPC point to next instruction
+// need change nextPc to current instruction
+func (self *Frame) RevertNextPC() {
+	self.nextPC = self.thread.pc
+}
