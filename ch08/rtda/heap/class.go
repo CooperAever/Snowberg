@@ -19,6 +19,8 @@ type Class struct {
 	staticSlotCount   uint
 	staticVars        Slots
 	initStarted       bool // is this class has been initialize
+	jClass *Object 	//java.lang.(class instance), every Class class correspond to a Class instance in heap,which pointed by JClass
+					// and this connection need classloader.loadBasicClasses() and classloader.LoadClass() effort
 }
 
 func newClass(cf *classfile.ClassFile) *Class {
@@ -83,6 +85,9 @@ func (self *Class) StaticVars() Slots {
 func (self *Class) InitStarted() bool {
 	return self.initStarted
 }
+func (self *Class) JClass() *Object {
+	return self.jClass
+}
 
 func (self *Class) StartInit() {
 	self.initStarted = true
@@ -102,20 +107,35 @@ func (self *Class) GetPackageName() string {
 }
 
 func (self *Class) GetMainMethod() *Method {
-	return self.getStaticMethod("main", "([Ljava/lang/String;)V")
+	return self.getMethod("main", "([Ljava/lang/String;)V", true)
 }
-
 func (self *Class) GetClinitMethod() *Method {
-	return self.getStaticMethod("<clinit>", "()V")
+	return self.getMethod("<clinit>", "()V", true)
 }
 
-func (self *Class) getStaticMethod(name, descriptor string) *Method {
-	for _, method := range self.methods {
-		if method.IsStatic() &&
-			method.name == name &&
-			method.descriptor == descriptor {
+func (self *Class) getMethod(name, descriptor string, isStatic bool) *Method {
+	for c := self; c != nil; c = c.superClass {
+		for _, method := range c.methods {
+			if method.IsStatic() == isStatic &&
+				method.name == name &&
+				method.descriptor == descriptor {
 
-			return method
+				return method
+			}
+		}
+	}
+	return nil
+}
+
+func (self *Class) getField(name, descriptor string, isStatic bool) *Field {
+	for c := self; c != nil; c = c.superClass {
+		for _, field := range c.fields {
+			if field.IsStatic() == isStatic &&
+				field.name == name &&
+				field.descriptor == descriptor {
+
+				return field
+			}
 		}
 	}
 	return nil
@@ -140,17 +160,24 @@ func (self *Class) ArrayClass() *Class {
 	return self.loader.LoadClass(arrayClassName)
 }
 
-func (self *Class) getField(name, descriptor string, isStatic bool) *Field {
-	for c := self; c != nil; c = c.superClass {
-		for _, field := range c.fields {
-			if field.IsStatic() == isStatic &&
-				field.name == name &&
-				field.descriptor == descriptor {
-
-				return field
-			}
-		}
-	}
-	return nil
+func (self *Class) JavaName() string {
+	return strings.Replace(self.name, "/", ".", -1)
 }
 
+func (self *Class) IsPrimitive() bool {
+	_, ok := primitiveTypes[self.name]
+	return ok
+}
+
+func (self *Class) GetInstanceMethod(name, descriptor string) *Method {
+	return self.getMethod(name, descriptor, false)
+}
+
+func (self *Class) GetRefVar(fieldName, fieldDescriptor string) *Object {
+	field := self.getField(fieldName, fieldDescriptor, true)
+	return self.staticVars.GetRef(field.slotId)
+}
+func (self *Class) SetRefVar(fieldName, fieldDescriptor string, ref *Object) {
+	field := self.getField(fieldName, fieldDescriptor, true)
+	self.staticVars.SetRef(field.slotId, ref)
+}

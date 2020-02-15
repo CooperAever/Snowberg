@@ -3,6 +3,7 @@ package heap
 type Object struct {
 	class  *Class
 	data interface{} //interface{} in go like void* in C，can represent any type,for normal object, still slots
+	extra interface{} // 
 }
 
 // create normal (non-array) object
@@ -20,6 +21,14 @@ func (self *Object) Class() *Class {
 func (self *Object) Fields() Slots {
 	return self.data.(Slots)
 }
+
+func (self *Object) Extra() interface{} {
+	return self.extra
+}
+func (self *Object) SetExtra(extra interface{}) {
+	self.extra = extra
+}
+
 
 func (self *Object) IsInstanceOf(class *Class) bool {
 	return class.isAssignableFrom(self.class)
