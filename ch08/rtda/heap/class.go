@@ -21,6 +21,7 @@ type Class struct {
 	initStarted       bool // is this class has been initialize
 	jClass *Object 	//java.lang.(class instance), every Class class correspond to a Class instance in heap,which pointed by JClass
 					// and this connection need classloader.loadBasicClasses() and classloader.LoadClass() effort
+	sourceFile string  	//source file name
 }
 
 func newClass(cf *classfile.ClassFile) *Class {
@@ -32,6 +33,7 @@ func newClass(cf *classfile.ClassFile) *Class {
 	class.constantPool = newConstantPool(class, cf.ConstantPool())
 	class.fields = newFields(class, cf.Fields())
 	class.methods = newMethods(class, cf.Methods())
+	class.sourceFile = getSourceFile(cf)
 	return class
 }
 
@@ -91,6 +93,10 @@ func (self *Class) JClass() *Object {
 
 func (self *Class) StartInit() {
 	self.initStarted = true
+}
+
+func (self *Class) SourceFile() string{
+	return self.sourceFile
 }
 
 // jvms 5.4.4
@@ -180,4 +186,11 @@ func (self *Class) GetRefVar(fieldName, fieldDescriptor string) *Object {
 func (self *Class) SetRefVar(fieldName, fieldDescriptor string, ref *Object) {
 	field := self.getField(fieldName, fieldDescriptor, true)
 	self.staticVars.SetRef(field.slotId, ref)
+}
+
+func getSourceFile(cf *classfile.ClassFile) string {
+	if sfAttr := cf.SourceFileAttribute(); sfAttr != nil {
+		return sfAttr.FileName()
+	}
+	return "Unknown" // todo
 }

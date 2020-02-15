@@ -50,3 +50,17 @@ func (self *Stack) top() *Frame {
 func (self *Stack) isEmpty() bool{
 	return self._top == nil
 }
+
+func (self *Stack) clear() {
+	for !self.isEmpty(){
+		self.pop()
+	}
+}
+
+func (self *Stack) getFrames() []*Frame{
+	frames := make([]*Frame,0,self.size) 	// argument 2 is size, argument 3 is pre-size which used for reslicing
+	for frame := self._top;frame != nil; frame = frame.lower{
+		frames = append(frames,frame)
+	}
+	return frames
+}
